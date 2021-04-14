@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  background: white;
+  color: rgb(150, 150, 150);
+  font-size: 24px;
+  font-weight: bolder;
+  border: none;
+  min-width: 150px;
+  min-height: 2.4em;
+}
+
+.visable {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.toggle {
+  margin-top: 10;
+}
+
+.hiddenText {
+  margin-top: 15;
+  margin-bottom: 15;
+}
+
+.text {
+  font-size: 18;
+}

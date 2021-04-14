@@ -1,0 +1,17 @@
+.tag-bar {
+  border: none;
+  border-bottom: #dddddd 1px solid;
+  height: 5vh;
+  font-size: 18;
+  font-family: "Raleway", sans-serif;
+  outline: none;
+}
+
+.tag {
+  background-color: #dddddd;
+  width: fit-content;
+  padding: 2%;
+  border-radius: 5px;
+  margin: 0.5vh 0 0.5vh;
+  font-weight: bold;
+}
