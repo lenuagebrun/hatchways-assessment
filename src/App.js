@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 const styles = {
@@ -36,67 +35,31 @@ const styles = {
   }
 };
 
-export default class MyComponent extends React.Component {
+export default function MyComponent() {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      items: []
-    };
-  }
-
-  componentDidMount() {
-    fetch("https://theaudiodb.com/api/v1/json/1/album.php?i=112024")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            isLoaded: true,
-            items: result.album
-          });
-        },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      )
-      //unmount!!
-  }
-
-  render() {
-    const { error, isLoaded, items } = this.state;
-    if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-      return <div>Loading...</div>;
-    } else {
-      return (
-        <div>
-          <ul>
-            {items.map(item => (
-              <li key={item.idAlbum}>
-                {item.strAlbum} <TextInput />
-                <DropDownBox hiddenText={item.strDescriptionEN} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-  }
+  return (
+    <SearchBar />
+    //<div>
+    //  <SearchBar />
+    //  <ul>
+    //    {items.map(item => (
+    //      <li key={item.idAlbum}>
+    //        {item.strAlbum} <TextInput />
+    //        <DropDownBox hiddenText={item.strDescriptionEN} />
+    //      </li>
+    //    ))}
+    //  </ul>
+    //</div>
+  );
 }
-
 
 class TextInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       newItem: '',
-      list: []
+      list: [],
+      searchAlbum: ''
     }
   }
 
@@ -161,7 +124,7 @@ class TextInput extends React.Component {
   }
 }
 
-const DropDownBox = ({ text, hiddenText }) => {
+const DropDownBox = ({ text, hiddenText, image }) => {
 
   const [clicked, toggle] = useState(false);
 
@@ -175,8 +138,75 @@ const DropDownBox = ({ text, hiddenText }) => {
         > Show {clicked ? `Less` : `More`} </button>
       </div>
       <div style={styles.toggle}>
-        {clicked ? <div style={styles.hiddenText}>{hiddenText}</div> : null}
+        {clicked ? <div style={styles.hiddenText}><img src={image} />{hiddenText}</div> : null}
       </div>
     </div>
   )
 };
+
+const SearchBar = (props) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [items, setItems] = useState([]);
+
+
+  // Note: the empty deps array [] means
+  // this useEffect will run once
+  // similar to componentDidMount()
+  useEffect(() => {
+    fetch("https://theaudiodb.com/api/v1/json/1/album.php?i=112024")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setIsLoaded(true);
+          setItems(result.album);
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      )
+  }, [])
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  } else if (!isLoaded) {
+    return <div>Loading...</div>;
+  } else {
+
+
+
+    return (
+      <div>
+        <input
+          type='text'
+          placeholder='search album...'
+          onChange={(event) => {
+            setSearchTerm(event.target.value);
+          }}
+        />
+        <ul>
+          {items.filter((val) => {
+            if (searchTerm == '') {
+              return val
+            } else if (val.strAlbum.toLowerCase().includes(searchTerm.toLowerCase())) {
+              return val
+            }
+          }).map(item => (
+            <li key={item.idAlbum}>
+              {item.strAlbum} {item.strArtist} <TextInput />
+              <DropDownBox
+                image={item.strAlbumThumb}
+                hiddenText={item.strDescriptionEN}
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+}
